@@ -1,3 +1,5 @@
+use std::path::Path;
+
 // Imports
 use time::{OffsetDateTime, UtcOffset};
 
@@ -31,4 +33,23 @@ pub fn datetime_to_path_string(dt: &OffsetDateTime) -> String {
         dt.minute(),
         dt.second(),
     )
+}
+
+pub async fn check_dirs(dirs: &[&Path]) -> eyre::Result<()> {
+    for dir in dirs.iter() {
+        if !dir.exists() {
+            eprintln!("Failed to find directory with path '{}'", dir.display());
+            match tokio::fs::create_dir_all(dir).await {
+                Ok(()) => eprintln!(
+                    "Successfully create directory with path '{}'",
+                    dir.display()
+                ),
+                Err(err) => eprintln!(
+                    "Failed to create directory with path '{}', '{err}'",
+                    dir.display()
+                ),
+            }
+        }
+    }
+    Ok(())
 }

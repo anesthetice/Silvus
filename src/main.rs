@@ -18,22 +18,18 @@ use tracing_subscriber::{
 async fn main() -> eyre::Result<()> {
     // ## Initialization
     // 1. init dirs, get local time
-    dirs::init();
+    dirs::init()?;
     let dt = utils::get_local_datetime();
 
-    // 2. create log file
-    let log_filepath = {
-        let log_directory = dirs::get().data_local_dir().join("logs");
-        if !log_directory.exists() {
-            std::fs::create_dir_all(&log_directory).wrap_err_with(|| {
-                format!(
-                    "Failed to create directories to store logs, '{}'",
-                    &log_directory.display()
-                )
-            })?;
-        }
-        log_directory.join(utils::datetime_to_path_string(&dt) + ".log")
-    };
+    // 2. check dirs
+    utils::check_dirs(&[dirs::get().data_dir(), dirs::get().config_dir()]).await?;
+
+    // 3. create the log file
+    let log_filepath = dirs::get()
+        .data_local_dir()
+        .join("logs")
+        .join(utils::datetime_to_path_string(&dt) + ".log");
+
     let log_file = std::fs::OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -45,7 +41,7 @@ async fn main() -> eyre::Result<()> {
             )
         })?;
 
-    // 3. setup tracing
+    // 4. setup tracing
     let (logfileout, _guard) = tracing_appender::non_blocking(log_file);
 
     let format_logfile = fmt::format()
@@ -85,7 +81,14 @@ async fn main() -> eyre::Result<()> {
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set global subscriber");
     info!("{}", utils::datetime_to_pretty_string(&dt));
 
-    // init config
+    // 5. init config
+    config::init().await?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn stroke_color_change() {}
 }
