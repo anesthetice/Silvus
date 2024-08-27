@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="server" />
+        <meta name="author" content="anesthetice" />
+        <title>Silvus</title>
+        <style>
+            body {
+                background-color: #0a0a0c;
+            }
+
+            img {
+                border-radius: 5px;
+                width: 126px;
+                height: 188px;
+            }
+
+            .card-row {
+                display: flex;
+                flex-direction: row;
+                gap: 20px;
+                justify-content: center;
+                align-items: stretch;
+            }
+
+            .card-column {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .card {
+                padding: 10px;
+                border-radius: 10px;
+                background-color: #121214;
+                box-shadow: 0px -10px #0e0e10;
+                margin: 20px;
+                width: 42vw;
+            }
+
+            .card-header {
+                display: flex;
+                align-items: center;
+                text-wrap: stable;
+            }
+
+            .card-header-thumbnail {
+            }
+
+            .card-header-title {
+                color: #f5f5ed;
+                padding: 20px;
+            }
+
+            .card-expand {
+                display: none;
+                padding: 10px;
+            }
+
+            .card-expand.show {
+                display: flex;
+            }
+
+            .card.expanded {
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card-row">
+            <div class="card-column">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-title"><h2>The Shawshank Redemption</h2></div>
+                    </div>
+                    <div class="card-expand">
+                        <p>This is the expanded content of card 1.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-title"><h2>The Summit of the Gods</h2></div>
+                    </div>
+                    <div class="card-expand">
+                        <p>This is the expanded content of card 2.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-title"><h2>The Last of Us</h2></div>
+                    </div>
+                    <div class="card-expand">
+                        <p>This is the expanded content of card 3.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-thumbnail"></div>
+                        <div class="card-header-title"><h2>Card no thumbnail</h2></div>
+                    </div>
+                    <div class="card-expand">
+                        <p>This is the expanded content of card ....</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-column">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-title"><h2>The Boy and the Heron</h2></div>
+                    </div>
+                    <div class="card-expand">
+                        <p>This is the expanded content of card 4.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-title"><h2>Spirited Away</h2></div>
+                    </div>
+                    <div class="card-expand">
+                        <p>This is the expanded content of card 5.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-title"><h2>A very long and very long it's just a very long title got it?</h2></div>
+                    </div>
+                    <div class="card-expand">
+                        <p>This is the expanded content of card 6.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-title"><h2>No content to expand</h2></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            const cards = document.querySelectorAll(".card");
+            cards.forEach(function (card) {
+                const expand = card.querySelector(".card-expand");
+                card.addEventListener("click", function () {
+                    expand.classList.toggle("show");
+                    card.classList.toggle("expanded");
+                });
+            });
+        </script>
+    </body>
+</html>
