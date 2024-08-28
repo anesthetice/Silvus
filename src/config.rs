@@ -1,9 +1,9 @@
-use std::sync::OnceLock;
-
+// Imports
 use eyre::Context;
 use serde::{Deserialize, Serialize};
+use std::{path::PathBuf, sync::OnceLock};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tracing::{info, warn};
+use tracing::{debug, info, warn};
 
 static CONFIG: OnceLock<Config> = OnceLock::new();
 
@@ -17,12 +17,15 @@ pub fn get() -> &'static Config {
     CONFIG.get().unwrap()
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Config {}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Config {
+    pub target_dir: Option<PathBuf>,
+}
 
+#[allow(clippy::derivable_impls)]
 impl Default for Config {
     fn default() -> Self {
-        Self {}
+        Self { target_dir: None }
     }
 }
 
@@ -30,8 +33,12 @@ impl Config {
     const FILENAME: &'static str = "silvus.conf";
 
     async fn load() -> Self {
+        debug!("Attempting to load config...");
         match Self::load_from_file().await {
-            Ok(config) => config,
+            Ok(config) => {
+                debug!("Config successfully loaded from file");
+                config
+            }
             Err(err) => {
                 warn!("Failed to load config from file, '{err}'");
                 let config = Self::default();
@@ -46,6 +53,7 @@ impl Config {
                         }
                     }
                 }
+                debug!("Config generated");
                 config
             }
         }
@@ -70,7 +78,8 @@ impl Config {
         Ok(ijson::from_value(&serde_json::from_slice(&bytes)?)?)
     }
 
-    async fn save_to_file(&self) -> eyre::Result<()> {
+    pub async fn save_to_file(&self) -> eyre::Result<()> {
+        debug!("Attempting to save config...");
         let filepath = crate::dirs::get().config_dir().join(Self::FILENAME);
         let bytes = serde_json::to_vec_pretty(&ijson::to_value(self)?)?;
 
@@ -88,6 +97,8 @@ impl Config {
             })?;
         write_file.write_all(&bytes).await?;
         write_file.sync_all().await?;
+
+        debug!("Saved config to '{}'", filepath.display());
 
         Ok(())
     }

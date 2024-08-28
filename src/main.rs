@@ -22,7 +22,7 @@ async fn main() -> eyre::Result<()> {
     let dt = utils::get_local_datetime();
 
     // 2. check dirs
-    utils::check_dirs(&[dirs::get().data_dir(), dirs::get().config_dir()]).await?;
+    utils::pt_validate_or_create_dirs(&[dirs::get().data_dir(), dirs::get().config_dir()]).await?;
 
     // 3. create the log file
     let log_filepath = dirs::get()
@@ -60,7 +60,7 @@ async fn main() -> eyre::Result<()> {
         .with_thread_ids(true)
         .with_thread_names(true);
 
-    let filter_console = EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new("INFO"));
+    let filter_console = EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new("debug"));
 
     let subscriber = Registry::default()
         .with(
@@ -83,6 +83,9 @@ async fn main() -> eyre::Result<()> {
 
     // 5. init config
     config::init().await?;
+
+    // ## CLI
+    cli::cli().await?;
 
     Ok(())
 }

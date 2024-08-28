@@ -1,3 +1,4 @@
+// Imports
 use directories::ProjectDirs;
 use eyre::OptionExt;
 use std::sync::OnceLock;

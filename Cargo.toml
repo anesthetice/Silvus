@@ -7,6 +7,7 @@ authors = ["anesthetice"]
 [dependencies]
 axum = { version = "0.7" }
 axum-macros = { version = "0.4" }
+clap = { version = "4.5", features = ["cargo"] }
 directories = { version = "5.0" }
 eyre = { version = "0.6" }
 ijson = { version = "0.1" }
