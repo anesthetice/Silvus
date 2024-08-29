@@ -9,7 +9,7 @@ pub(super) fn subcommand() -> Command {
     )
 }
 
-pub(super) async fn process(arg_matches: &ArgMatches) -> eyre::Result<()> {
+pub(super) fn process(arg_matches: &ArgMatches) -> eyre::Result<()> {
     if let Some(path) = &crate::config::get().target_dir {
         warn!(
             "A target directory already exists with path '{}'\n{:>18} Please note that this directory will not be affected in any way",
@@ -21,10 +21,10 @@ pub(super) async fn process(arg_matches: &ArgMatches) -> eyre::Result<()> {
         .get_one::<PathBuf>("path")
         .ok_or_eyre("Failed to get path")?;
     let path = std::path::absolute(path).wrap_err("Failed to absolutize path")?;
-    crate::utils::validate_or_create_dirs(&[&path]).await?;
+    crate::utils::check_or_create_all(&path)?;
 
     let mut owned_config = crate::config::get().clone();
     owned_config.target_dir = Some(path);
-    owned_config.save_to_file().await?;
+    owned_config.save_to_file()?;
     Ok(())
 }

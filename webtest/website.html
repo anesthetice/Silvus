@@ -10,13 +10,6 @@
             body {
                 background-color: #0a0a0c;
             }
-
-            img {
-                border-radius: 5px;
-                width: 126px;
-                height: 188px;
-            }
-
             .card-row {
                 display: flex;
                 flex-direction: row;
@@ -46,6 +39,11 @@
             }
 
             .card-header-thumbnail {
+                img {
+                    border-radius: 5px;
+                    width: 126px;
+                    height: 188px;
+                }
             }
 
             .card-header-title {
@@ -54,7 +52,15 @@
             }
 
             .card-expand {
+                img {
+                    width: 20px;
+                    height: 20px;
+                }
+                p {
+                    color: #d5d5cd;
+                }
                 display: none;
+                flex-direction: column;
                 padding: 10px;
             }
 
@@ -64,9 +70,27 @@
 
             .card.expanded {
             }
+
+            .page-header {
+                img {
+                    width: 12vw;
+                }
+                h1 {
+                    color: #f5f5ed;
+                }
+                h3 {
+                    color: #e5e5dd;
+                }
+                display: block;
+                text-align: center;
+            }
         </style>
     </head>
     <body>
+        <div class="page-header">
+            <img src="../assets/icon.svg" />
+            <h3>204GB indexed</h3>
+        </div>
         <div class="card-row">
             <div class="card-column">
                 <div class="card">
@@ -76,6 +100,7 @@
                     </div>
                     <div class="card-expand">
                         <p>This is the expanded content of card 1.</p>
+                        <a href="shaw.jpg">Download <img src="../assets/download.svg" /></a>
                     </div>
                 </div>
                 <div class="card">

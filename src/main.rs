@@ -14,21 +14,19 @@ use tracing_subscriber::{
     EnvFilter, Layer, Registry,
 };
 
-#[tokio::main]
-async fn main() -> eyre::Result<()> {
+fn main() -> eyre::Result<()> {
     // ## Initialization
     // 1. init dirs, get local time
     dirs::init()?;
     let dt = utils::get_local_datetime();
 
     // 2. check dirs
-    utils::pt_validate_or_create_dirs(&[dirs::get().data_dir(), dirs::get().config_dir()]).await?;
+    let log_dir = dirs::get().data_local_dir().join("logs");
+    utils::check_or_create_all_nt(&log_dir)?;
+    utils::check_or_create_all_nt(dirs::get().config_dir())?;
 
     // 3. create the log file
-    let log_filepath = dirs::get()
-        .data_local_dir()
-        .join("logs")
-        .join(utils::datetime_to_path_string(&dt) + ".log");
+    let log_filepath = log_dir.join(utils::datetime_to_path_string(&dt) + ".log");
 
     let log_file = std::fs::OpenOptions::new()
         .write(true)
@@ -82,10 +80,10 @@ async fn main() -> eyre::Result<()> {
     info!("{}", utils::datetime_to_pretty_string(&dt));
 
     // 5. init config
-    config::init().await?;
+    config::init()?;
 
     // ## CLI
-    cli::cli().await?;
+    cli::cli()?;
 
     Ok(())
 }
