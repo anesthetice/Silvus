@@ -28,7 +28,7 @@
                 border-radius: 10px;
                 background-color: #121214;
                 box-shadow: 0px -10px #0e0e10;
-                margin: 20px;
+                margin-top: 25px;
                 width: 42vw;
             }
 
@@ -46,17 +46,34 @@
                 }
             }
 
-            .card-header-title {
+            .card-header-box {
+                display: flex;
+                flex-direction: column;
+                padding: 35px;
+                line-height: 0em;
+            }
+
+            .card-header-box-title {
                 color: #f5f5ed;
-                padding: 20px;
+                line-height: 1.4em;
+            }
+
+            .card-header-box-subtitle {
+                img {
+                    height: 1em;
+                }
+                color: #d5d5cd;
+                word-spacing: 1em;
             }
 
             .card-expand {
                 img {
-                    width: 20px;
-                    height: 20px;
+                    height: 1em;
                 }
                 p {
+                    color: #d5d5cd;
+                }
+                li {
                     color: #d5d5cd;
                 }
                 display: none;
@@ -95,26 +112,40 @@
             <div class="card-column">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
-                        <div class="card-header-title"><h2>The Shawshank Redemption</h2></div>
+                        <div class="card-header-thumbnail"><img src=".thumbnail" /></div>
+                        <div class="card-header-box">
+                            <div class="card-header-box-title"><h2>The Shawshank Redemption</h2></div>
+                            <div class="card-header-box-subtitle">
+                                <p>
+                                    2024 • 2052 MB • <a href="https://google.com" download><img src="../assets/download.svg" /></a>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-expand">
                         <p>This is the expanded content of card 1.</p>
-                        <a href="shaw.jpg">Download <img src="../assets/download.svg" /></a>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
-                        <div class="card-header-title"><h2>The Summit of the Gods</h2></div>
+                        <div class="card-header-thumbnail"><img src=".thumbnail" /></div>
+                        <div class="card-header-box">
+                            <div class="card-header-box-title"><h2>The Last of Us</h2></div>
+                            <div class="card-header-box-subtitle">
+                                <p>2024 • Season  1</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-expand">
                         <p>This is the expanded content of card 2.</p>
+                        <p>
+                            season  01 • episode  01 • 2405  MB • <a href="https://google.com" download><img src="../assets/download.svg" /></a>
+                        </p>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-thumbnail"><img src=".thumbnail" /></div>
                         <div class="card-header-title"><h2>The Last of Us</h2></div>
                     </div>
                     <div class="card-expand">
@@ -134,7 +165,7 @@
             <div class="card-column">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-thumbnail"><img src=".thumbnail" /></div>
                         <div class="card-header-title"><h2>The Boy and the Heron</h2></div>
                     </div>
                     <div class="card-expand">
@@ -143,7 +174,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-thumbnail"><img src=".thumbnail" /></div>
                         <div class="card-header-title"><h2>Spirited Away</h2></div>
                     </div>
                     <div class="card-expand">
@@ -152,7 +183,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-thumbnail"><img src=".thumbnail" /></div>
                         <div class="card-header-title"><h2>A very long and very long it's just a very long title got it?</h2></div>
                     </div>
                     <div class="card-expand">
@@ -161,7 +192,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-thumbnail"><img src="shaw.jpg" /></div>
+                        <div class="card-header-thumbnail"><img src=".thumbnail" /></div>
                         <div class="card-header-title"><h2>No content to expand</h2></div>
                     </div>
                 </div>

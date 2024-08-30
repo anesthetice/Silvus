@@ -19,8 +19,10 @@ pub(super) fn process(arg_matches: &ArgMatches) -> eyre::Result<()> {
     }
     let path = arg_matches
         .get_one::<PathBuf>("path")
-        .ok_or_eyre("Failed to get path")?;
-    let path = std::path::absolute(path).wrap_err("Failed to absolutize path")?;
+        .ok_or_eyre("Failed to get path")?
+        .canonicalize()
+        .wrap_err("Failed to canonicalize path")?;
+
     crate::utils::check_or_create_all(&path)?;
 
     let mut owned_config = crate::config::get().clone();

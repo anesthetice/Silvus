@@ -5,17 +5,21 @@ mod other;
 mod show;
 
 // Imports
-use crate::utils::{get_extension, get_filename};
-use eyre::eyre;
-use serde::{Deserialize, Serialize};
+use crate::utils::{
+    get_extension, get_filename, get_filestem, get_rel_path_string, lazy_read_file_to_string,
+};
+use eyre::{eyre, OptionExt};
+use itertools::Itertools;
+use once_cell::sync::Lazy;
+use regex::Regex;
 use std::path::{Path, PathBuf};
 use tracing::{instrument, warn};
 
-static VIDEO_FILE_EXTENSIONS: [&str; 10] = [
-    "webm", "mkv", "vob", "ogg", "ogv", "avi", "move", "qt", "m4v", "m4v",
+static VIDEO_FILE_EXTENSIONS: [&str; 11] = [
+    "webm", "mkv", "vob", "ogg", "ogv", "avi", "move", "qt", "m4v", "m4v", "mp4",
 ];
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub enum Card {
     Movie(movie::Movie),
     Show(show::Show),
@@ -25,6 +29,10 @@ pub enum Card {
 impl Card {
     #[instrument]
     pub fn from_path(path: &Path) -> eyre::Result<Self> {
+        let base = path
+            .parent()
+            .ok_or_eyre("Specified path doesn't have a parent")?;
+
         let mut vid_fps: Vec<PathBuf> = Vec::new();
         let mut dot_fps: Vec<PathBuf> = Vec::new();
         let mut otr_fps: Vec<PathBuf> = Vec::new();
@@ -52,24 +60,43 @@ impl Card {
             }
         }
 
-        /*
-        match video_filepaths.len() {
+        match vid_fps.len() {
             // Other route
-            0 => unreachable!(),
+            0 => Err(eyre!("'Other' route not ready")),
             // Movie route
-            1 => unreachable!(),
-            // Series route
-            2.. => unreachable!(),
+            1 => movie::Movie::from_paths(base, path, vid_fps, dot_fps, otr_fps),
+            // Show route
+            2.. => Err(eyre!("'Show' route not ready")),
         }
-        */
-        Err(eyre!("misc"))
+    }
+
+    pub fn into_html_string(self) -> String {
+        match self {
+            Self::Movie(movie) => movie.into_html_string(),
+            Self::Show(show) => String::from("SHOW NOT IMPLEMENTED"),
+            Self::Other(other) => String::from("OTHER NOT IMPLEMENTED"),
+        }
     }
 }
 
 trait CardMethods {
     fn from_paths(
+        base: &Path,
+        path: &Path,
         vid_fps: Vec<PathBuf>,
         dot_fps: Vec<PathBuf>,
         otr_fps: Vec<PathBuf>,
     ) -> eyre::Result<Card>;
+
+    fn into_html_string(self) -> String;
+}
+
+// Size of a file represented by MB
+#[derive(Debug)]
+pub struct FileSize(u32);
+
+impl From<u64> for FileSize {
+    fn from(value: u64) -> Self {
+        Self(u32::try_from(value / 1_000_000).unwrap_or(u32::MAX))
+    }
 }

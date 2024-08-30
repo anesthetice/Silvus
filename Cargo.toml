@@ -12,11 +12,20 @@ directories = { version = "5.0" }
 eyre = { version = "0.6" }
 ijson = { version = "0.1" }
 indoc = { version = "2.0" }
+itertools = { version = "0.13" }
+once_cell = { version = "1.19" }
+regex = { version = "1.10" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 time = { version = "0.3", features = ["local-offset"] }
 tokio = { version = "1.39", features = ["full"] }
-tower = { version = "0.5" }
+tower-http = { version = "0.5", features = ["fs"] }
 tracing = { version = "0.1" }
 tracing-appender = { version = "0.2" }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+debug = true

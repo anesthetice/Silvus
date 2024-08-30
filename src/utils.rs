@@ -1,5 +1,6 @@
 // Imports
-use std::path::Path;
+use eyre::OptionExt;
+use std::{io::Read, path::Path};
 use time::{OffsetDateTime, UtcOffset};
 use tracing::{info, warn};
 
@@ -97,4 +98,47 @@ pub fn get_filestem(fp: &Path) -> &str {
         return "";
     };
     stem.to_str().unwrap_or("")
+}
+
+pub fn lazy_read_file_to_string(fp: &Path) -> Option<String> {
+    if !fp.is_file() {
+        return None;
+    }
+    let mut string = String::new();
+    let mut read_op = || {
+        std::fs::OpenOptions::new()
+            .read(true)
+            .open(fp)?
+            .read_to_string(&mut string)?;
+        Ok::<(), eyre::Error>(())
+    };
+    match read_op() {
+        Ok(()) => Some(string.trim().to_string()),
+        Err(err) => {
+            warn!(
+                "Failed to read file with path '{}', '{}'",
+                fp.display(),
+                err
+            );
+            None
+        }
+    }
+}
+
+pub fn get_rel_path_string(path: &Path, base: &Path) -> Option<String> {
+    let operation = || {
+        Ok::<String, eyre::Error>(
+            path.strip_prefix(base)?
+                .to_str()
+                .ok_or_eyre("Filepath not encoded with valid-utf8")?
+                .replace("\\", "/"),
+        )
+    };
+    match operation() {
+        Ok(string) => Some(string),
+        Err(err) => {
+            warn!("{err}");
+            None
+        }
+    }
 }

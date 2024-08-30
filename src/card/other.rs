@@ -1,9 +1,9 @@
 use super::*;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct Other {
     title: String,
     description: Option<String>,
-    thumbnail: Option<PathBuf>,
-    content: Vec<(PathBuf, f64)>,
+    thumbnail: Option<String>,
+    content: Vec<(String, FileSize)>,
 }
