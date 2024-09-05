@@ -12,28 +12,6 @@ pub struct Movie {
     filesize: FileSize,
 }
 
-// this is sane way of doing things, trust me bro
-macro_rules! E {
-    ($e:expr, $i:literal) => {
-        if let Some(ref a) = $e {
-            a
-        } else {
-            $i
-        }
-    };
-}
-
-// this is sane way of doing things, trust me bro
-macro_rules! F {
-    ($e:expr, $p:literal, $i:literal) => {
-        if let Some(ref a) = $e {
-            a.to_string() + $p
-        } else {
-            $i.to_string()
-        }
-    };
-}
-
 impl CardMethods for Movie {
     fn from_paths(
         base: &Path,
@@ -92,26 +70,27 @@ impl CardMethods for Movie {
         indoc::formatdoc! {
             "<div class=\"card\">
                 <div class=\"card-header\">
-                    <div class=\"card-header-thumbnail\"><img src=\"{}\" /></div>
+                    <div class=\"card-header-thumbnail\"><img src=\"/res/{}\" /></div>
                     <div class=\"card-header-box\">
                         <div class=\"card-header-box-title\"><h2>{}</h2></div>
                         <div class=\"card-header-box-subtitle\">
                             <p>
-                                {}{:?} MB • <a href=\"{}\" download><img src=\".assets/download.svg\" /></a>
+                                {}{:?} MB • <a href=\"/res/{}\" download><img src=\"/res/.assets/download.svg\" /></a>
                             </p>
                         </div>
                     </div>
                 </div>
                 <div class=\"card-expand\">
                     <p>{}</p>
-                </div>",
+                </div>
+            </div>",
 
-            E!(self.thumbnail, "./assets/thumbnail.jpg"),
+            display(self.thumbnail, "", "", ".assets/default_thumbnail.png"),
             self.title,
-            F!(self.year, " • ", ""),
+            display(self.year, "", " • ", ""),
             self.filesize.0,
             self.filepath,
-            E!(self.description, "No description provided"),
+            display(self.description, "", "", "No description provided.")
         }
     }
 }

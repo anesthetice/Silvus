@@ -15,28 +15,6 @@ pub struct Show {
     episodes: Vec<(u8, u8, String, FileSize)>,
 }
 
-// this is sane way of doing things, trust me bro
-macro_rules! Exp {
-    ($e:expr, $i:literal) => {
-        if let Some(ref a) = $e {
-            a
-        } else {
-            $i
-        }
-    };
-}
-
-// this is sane way of doing things, trust me bro
-macro_rules! Pre {
-    ($e:expr, $p:literal, $i:literal) => {
-        if let Some(ref a) = $e {
-            $p.to_string() + a.to_string()
-        } else {
-            $i.to_string()
-        }
-    };
-}
-
 impl CardMethods for Show {
     fn from_paths(
         base: &Path,
@@ -121,28 +99,38 @@ impl CardMethods for Show {
         indoc::formatdoc! {
             "<div class=\"card\">
                 <div class=\"card-header\">
-                    <div class=\"card-header-thumbnail\"><img src=\"{}\" /></div>
+                    <div class=\"card-header-thumbnail\"><img src=\"/res/{}\" /></div>
                     <div class=\"card-header-box\">
                         <div class=\"card-header-box-title\"><h2>{}</h2></div>
                         <div class=\"card-header-box-subtitle\">
-                            <p>2024 • Season  01</p>
-                        </div>
+                            <p>{} • {}</p>
                         </div>
                     </div>
                 </div>
                 <div class=\"card-expand\">
-                    <p>{}</p>
                     <p>
-                        season  01 • episode  01 • 2405  MB • <a href=\"https://google.com\" download><img src=\".assets/download.svg\" /></a>
+                        {}
                     </p>
-                </div>",
+                    <p>
+                        {}
+                    </p>
+                </div>
+            </div>",
 
-            Exp!(self.thumbnail, "./assets/thumbnail.jpg"),
+            display(self.thumbnail, "", "", ".assets/default_thumbnail.png"),
             self.title,
-            Pre!(self.year, " • ", ""),
-            Pre!(self.subtitle, " • ")
-            self.filepath,
-            Exp!(self.description, "No description provided"),
+            display(self.year, "", "", "????"),
+            display(self.subtitle, "", "", ""),
+            display(self.description, "", "", "No description provided."),
+            self.episodes.into_iter().map(|(s, e, fp, size)| {
+                format!(
+                    "season  {:0>2} • episode  {:0>2} • {}  MB • <a href=\"/res/{}\" download><img src=\"/res/.assets/download.svg\" /></a>",
+                    s,
+                    e,
+                    size.0,
+                    fp,
+                )
+            }).fold(String::new(), |acc, x| acc + &x + "\n")
         }
     }
 }

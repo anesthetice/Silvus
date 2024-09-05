@@ -1,44 +1,48 @@
-use crate::card::Card;
+use std::sync::OnceLock;
+
+use axum::{
+    body::Body,
+    http::header::{CONTENT_LENGTH, CONTENT_TYPE},
+    response::{Html, IntoResponse, Response},
+    routing::get,
+    Router,
+};
+use tower_http::{services::ServeDir, trace::TraceLayer};
+
+use crate::card::{cards::Cards, Card};
 
 use super::*;
+
+static HTML_PAGE: OnceLock<&'static str> = OnceLock::new();
 
 pub(super) fn subcommand() -> Command {
     Command::new("run")
 }
 
-pub(super) fn process(arg_matches: &ArgMatches) -> eyre::Result<()> {
-    let path = crate::config::get()
-        .target_dir
-        .to_owned()
-        .ok_or_eyre("No target path set, use the init subcommand")?;
+pub(super) fn process(_arg_matches: &ArgMatches) -> eyre::Result<()> {
+    let cards = Cards::load()?;
+    let response = cards.generate_static_html_page();
+    HTML_PAGE.set(Box::leak(response.into_boxed_str())).unwrap();
 
-    let cards: Vec<Card> = std::fs::read_dir(&path)?
-        .filter_map(|dir| {
-            let dir = match dir {
-                Ok(dir) => dir.path(),
-                Err(err) => {
-                    warn!("{err}");
-                    return None;
-                }
-            };
-            if dir.is_dir() {
-                match Card::from_path(&dir) {
-                    Ok(card) => Some(card),
-                    Err(err) => {
-                        warn!("{err}");
-                        None
-                    }
-                }
-            } else {
-                None
-            }
-        })
-        .collect();
-
-    println!("{:#?}", cards);
-
-    for card in cards {
-        println!("{}\n\n", card.into_html_string())
-    }
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()?
+        .block_on(async {
+            let app = Router::new()
+                .layer(TraceLayer::new_for_http())
+                .route("/", get(one))
+                .nest_service(
+                    "/res/",
+                    ServeDir::new(crate::config::get().target_dir.as_ref().unwrap()),
+                );
+            // run our app with hyper, listening globally on port 3000
+            let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+            axum::serve(listener, app).await.unwrap();
+        });
     Ok(())
+}
+
+async fn one() -> impl IntoResponse {
+    let st: &'static str = HTML_PAGE.get().unwrap();
+    Html(st)
 }

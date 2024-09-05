@@ -1,5 +1,5 @@
 // Modules
-mod cards;
+pub mod cards;
 mod movie;
 mod other;
 mod show;
@@ -12,6 +12,7 @@ use eyre::{eyre, OptionExt};
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use regex::Regex;
+use std::fmt::Display;
 use std::path::{Path, PathBuf};
 use tracing::{instrument, warn};
 
@@ -66,14 +67,14 @@ impl Card {
             // Movie route
             1 => movie::Movie::from_paths(base, path, vid_fps, dot_fps, otr_fps),
             // Show route
-            2.. => Err(eyre!("'Show' route not ready")),
+            2.. => show::Show::from_paths(base, path, vid_fps, dot_fps, otr_fps),
         }
     }
 
     pub fn into_html_string(self) -> String {
         match self {
             Self::Movie(movie) => movie.into_html_string(),
-            Self::Show(show) => String::from("SHOW NOT IMPLEMENTED"),
+            Self::Show(show) => show.into_html_string(),
             Self::Other(other) => String::from("OTHER NOT IMPLEMENTED"),
         }
     }
@@ -98,5 +99,12 @@ pub struct FileSize(u32);
 impl From<u64> for FileSize {
     fn from(value: u64) -> Self {
         Self(u32::try_from(value / 1_000_000).unwrap_or(u32::MAX))
+    }
+}
+
+fn display<T: Display>(input: Option<T>, pre: &str, post: &str, alt: &str) -> String {
+    match input {
+        Some(val) => format!("{pre}{}{post}", val),
+        None => alt.to_owned(),
     }
 }

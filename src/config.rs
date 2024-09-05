@@ -23,12 +23,34 @@ pub fn get() -> &'static Config {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub target_dir: Option<PathBuf>,
+    pub imdb_url: String,
+    pub imdb_description_start_match: String,
+    pub imdb_description_end_match: String,
+    pub imdb_image_redirect_start_match: String,
+    pub imdb_image_redirect_end_match: String,
+    pub imdb_image_start_match: String,
+    pub imdb_image_end_match: String,
+    pub user_agent: String,
+    pub connection_timeout: std::time::Duration,
 }
 
 #[allow(clippy::derivable_impls)]
 impl Default for Config {
     fn default() -> Self {
-        Self { target_dir: None }
+        Self {
+            target_dir: None,
+            imdb_url: r#"https://www.imdb.com/"#.to_string(),
+            imdb_description_start_match: r#"class="sc-2d37a7c7-2 ggeRnl">"#.to_string(),
+            imdb_description_end_match: r#"</span></p>"#.to_string(),
+            imdb_image_redirect_start_match: r#"class="ipc-lockup-overlay ipc-focusable" href=""#
+                .to_string(),
+            imdb_image_redirect_end_match: r#"""#.to_string(),
+            imdb_image_start_match: r#"https://m.media-amazon.com/images/"#.to_string(),
+            imdb_image_end_match: r#"""#.to_string(),
+            user_agent: "Mozilla/5.0 (X11; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0"
+                .to_string(),
+            connection_timeout: std::time::Duration::from_secs(5),
+        }
     }
 }
 
