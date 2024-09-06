@@ -2,8 +2,8 @@ use super::*;
 
 #[derive(Debug)]
 pub struct Movie {
-    title: String,
-    year: Option<u16>,
+    pub title: String,
+    year: Option<String>,
     description: Option<String>,
     // relative path, http-compatible
     thumbnail: Option<String>,
@@ -32,13 +32,7 @@ impl CardMethods for Movie {
                         title = string;
                     };
                 }
-                ".year" => {
-                    if let Some(y) = lazy_read_file_to_string(&dot_fp) {
-                        if let Ok(y) = y.parse::<u16>() {
-                            year.replace(y);
-                        }
-                    }
-                }
+                ".year" => year = lazy_read_file_to_string(&dot_fp),
                 ".description" | ".descr" => description = lazy_read_file_to_string(&dot_fp),
                 ".thumbnail" => thumbnail = get_rel_path_string(&dot_fp, base),
                 _ => (),
@@ -75,7 +69,7 @@ impl CardMethods for Movie {
                         <div class=\"card-header-box-title\"><h2>{}</h2></div>
                         <div class=\"card-header-box-subtitle\">
                             <p>
-                                {}{:?} MB • <a href=\"/res/{}\" download><img src=\"/res/.assets/download.svg\" /></a>
+                                {} • {} MB • <a href=\"/res/{}\" download><img src=\"/res/.assets/download.svg\" /></a>
                             </p>
                         </div>
                     </div>
@@ -87,7 +81,7 @@ impl CardMethods for Movie {
 
             display(self.thumbnail, "", "", ".assets/default_thumbnail.png"),
             self.title,
-            display(self.year, "", " • ", ""),
+            display(self.year, "", "", "????"),
             self.filesize.0,
             self.filepath,
             display(self.description, "", "", "No description provided.")

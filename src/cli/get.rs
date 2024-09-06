@@ -78,6 +78,24 @@ pub(super) fn process(arg_matches: &ArgMatches) -> eyre::Result<()> {
                 .write_all(description.as_bytes())?;
 
             let mut sidx = text
+                .find(&gcfg().imdb_year_start_match)
+                .ok_or_eyre("Failed to find a match for the start of the year")?;
+            sidx += gcfg().imdb_year_start_match.len();
+
+            let offset = text[sidx..]
+                .find(&gcfg().imdb_year_end_match)
+                .ok_or_eyre("Failed to find a match for the end of the year")?;
+
+            let year = &text[sidx..sidx + offset];
+
+            std::fs::OpenOptions::new()
+                .write(true)
+                .truncate(true)
+                .create(true)
+                .open(path.join(".year"))?
+                .write_all(year.as_bytes())?;
+
+            let mut sidx = text
                 .find(&gcfg().imdb_image_redirect_start_match)
                 .ok_or_eyre("Failed to find a match for the start of the image redirect")?;
             sidx += gcfg().imdb_image_redirect_start_match.len();
@@ -100,11 +118,6 @@ pub(super) fn process(arg_matches: &ArgMatches) -> eyre::Result<()> {
                 .ok_or_eyre("Failed to find a match for the end of the image")?;
 
             let image = &text[sidx..sidx + offset];
-
-            println!(
-                "description = '{}'\nimage redirect = '{}'\nimage = '{}'",
-                description, image_redirect, image
-            );
 
             let response = client.get(image).send().await?;
             let image = response.bytes().await?;

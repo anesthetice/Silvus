@@ -1,17 +1,13 @@
-use std::sync::OnceLock;
-
+// Imports
+use super::*;
+use crate::card::cards::Cards;
 use axum::{
-    body::Body,
-    http::header::{CONTENT_LENGTH, CONTENT_TYPE},
-    response::{Html, IntoResponse, Response},
+    response::{Html, IntoResponse},
     routing::get,
     Router,
 };
+use std::sync::OnceLock;
 use tower_http::{services::ServeDir, trace::TraceLayer};
-
-use crate::card::{cards::Cards, Card};
-
-use super::*;
 
 static HTML_PAGE: OnceLock<&'static str> = OnceLock::new();
 
@@ -30,19 +26,20 @@ pub(super) fn process(_arg_matches: &ArgMatches) -> eyre::Result<()> {
         .block_on(async {
             let app = Router::new()
                 .layer(TraceLayer::new_for_http())
-                .route("/", get(one))
+                .route("/", get(root))
                 .nest_service(
-                    "/res/",
+                    "/res",
                     ServeDir::new(crate::config::get().target_dir.as_ref().unwrap()),
                 );
-            // run our app with hyper, listening globally on port 3000
-            let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-            axum::serve(listener, app).await.unwrap();
-        });
-    Ok(())
+            tracing::info!("Binding application to port {}", crate::config::get().port);
+            let address = format!("0.0.0.0:{}", crate::config::get().port);
+            let listener = tokio::net::TcpListener::bind(&address).await?;
+            axum::serve(listener, app).await?;
+            Ok(())
+        })
 }
 
-async fn one() -> impl IntoResponse {
+async fn root() -> impl IntoResponse {
     let st: &'static str = HTML_PAGE.get().unwrap();
     Html(st)
 }

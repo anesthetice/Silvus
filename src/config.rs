@@ -23,9 +23,12 @@ pub fn get() -> &'static Config {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub target_dir: Option<PathBuf>,
+    pub port: String,
     pub imdb_url: String,
     pub imdb_description_start_match: String,
     pub imdb_description_end_match: String,
+    pub imdb_year_start_match: String,
+    pub imdb_year_end_match: String,
     pub imdb_image_redirect_start_match: String,
     pub imdb_image_redirect_end_match: String,
     pub imdb_image_start_match: String,
@@ -39,9 +42,12 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             target_dir: None,
+            port: "1888".to_string(),
             imdb_url: r#"https://www.imdb.com/"#.to_string(),
             imdb_description_start_match: r#"class="sc-2d37a7c7-2 ggeRnl">"#.to_string(),
             imdb_description_end_match: r#"</span></p>"#.to_string(),
+            imdb_year_start_match: r#"releaseinfo?ref_=tt_ov_rdat">"#.to_string(),
+            imdb_year_end_match: r#"</a>"#.to_string(),
             imdb_image_redirect_start_match: r#"class="ipc-lockup-overlay ipc-focusable" href=""#
                 .to_string(),
             imdb_image_redirect_end_match: r#"""#.to_string(),

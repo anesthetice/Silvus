@@ -1,6 +1,4 @@
 use super::*;
-use axum::response::{Html, IntoResponse};
-use indoc::formatdoc;
 
 pub struct Cards(Vec<Card>);
 
@@ -23,11 +21,14 @@ impl Cards {
                         return None;
                     }
                 };
+                if get_filestem(&dir).starts_with('.') {
+                    return None;
+                }
                 if dir.is_dir() {
-                    match Card::from_path(&dir) {
+                    match Card::from_path(&path, &dir) {
                         Ok(card) => Some(card),
                         Err(err) => {
-                            warn!("{err}");
+                            warn!("{} - {err}", dir.display());
                             None
                         }
                     }
@@ -35,13 +36,27 @@ impl Cards {
                     None
                 }
             })
+            .sorted_by(|a, b| a.get_title().cmp(b.get_title()))
             .collect();
 
         Ok(Self(cards))
     }
 
     pub fn generate_static_html_page(self) -> String {
-        formatdoc! {
+        let mut left_column = String::new();
+        let mut right_column = String::new();
+
+        for (idx, card) in self.0.into_iter().enumerate() {
+            if idx % 2 == 0 {
+                left_column.push_str(&card.into_html_string());
+                left_column.push('\n');
+            } else {
+                right_column.push_str(&card.into_html_string());
+                right_column.push('\n');
+            }
+        }
+
+        indoc::formatdoc! {
             "<!doctype html>
             <html lang=\"en\">
                 <head>
@@ -62,6 +77,9 @@ impl Cards {
                         <div class=\"card-column\">
                             {}
                         </div>
+                        <div class=\"card-column\">
+                            {}
+                        </div>
                     </div>
                     <script>
                         {}
@@ -70,7 +88,8 @@ impl Cards {
             </html>
             ",
             STYLE,
-            self.0.into_iter().map(|card| card.into_html_string()).fold(String::new(), |acc, x| acc + &x +"\n"),
+            left_column,
+            right_column,
             SCRIPT,
         }
     }

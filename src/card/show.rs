@@ -5,9 +5,9 @@ static ERE: Lazy<Regex> = Lazy::new(|| Regex::new(r#"[Ee]\d{1,2}"#).unwrap());
 
 #[derive(Debug)]
 pub struct Show {
-    title: String,
+    pub title: String,
     subtitle: Option<String>,
-    year: Option<u16>,
+    year: Option<String>,
     description: Option<String>,
     // relative filepath
     thumbnail: Option<String>,
@@ -37,13 +37,7 @@ impl CardMethods for Show {
                     };
                 }
                 ".subtitle" | ".subt" => subtitle = lazy_read_file_to_string(&dot_fp),
-                ".year" => {
-                    if let Some(y) = lazy_read_file_to_string(&dot_fp) {
-                        if let Ok(y) = y.parse::<u16>() {
-                            year.replace(y);
-                        }
-                    }
-                }
+                ".year" => year = lazy_read_file_to_string(&dot_fp),
                 ".description" | ".descr" => description = lazy_read_file_to_string(&dot_fp),
                 ".thumbnail" => thumbnail = get_rel_path_string(&dot_fp, base),
                 _ => (),
@@ -65,15 +59,19 @@ impl CardMethods for Show {
 
                 let fs = get_filestem(&fp);
 
-                let Some(season) = SRE.find(fs) else {
-                    warn!("Failed to match season in filename");
-                    return None;
+                let season = match SRE.find(fs) {
+                    Some(season) => {
+                        // unwrapping because regex rule assures this is valid
+                        season.as_str()[1..].parse::<u8>().unwrap()
+                    }
+                    None => {
+                        warn!("Failed to match season in filename, assuming season 01");
+                        1_u8
+                    }
                 };
-                // unwrapping because regex rule assures this is valid
-                let season = season.as_str()[1..].parse::<u8>().unwrap();
 
                 let Some(episode) = ERE.find(fs) else {
-                    warn!("Failed to match episode in filename");
+                    trace!("Failed to match episode in filename");
                     return None;
                 };
                 // unwrapping because regex rule assures this is valid
@@ -81,8 +79,11 @@ impl CardMethods for Show {
 
                 Some((season, episode, rel_fp, filesize))
             })
-            .sorted_by_key(|(s, ..)| *s)
-            .sorted_by_key(|(_, e, ..)| *e)
+            .sorted_by_key(|(s, e, ..)| {
+                let s = u16::from(*s);
+                let e = u16::from(*e);
+                s * 100 + e
+            })
             .collect_vec();
 
         Ok(Card::Show(Self {
@@ -103,7 +104,7 @@ impl CardMethods for Show {
                     <div class=\"card-header-box\">
                         <div class=\"card-header-box-title\"><h2>{}</h2></div>
                         <div class=\"card-header-box-subtitle\">
-                            <p>{} • {}</p>
+                            <p>{} {}</p>
                         </div>
                     </div>
                 </div>
@@ -111,20 +112,20 @@ impl CardMethods for Show {
                     <p>
                         {}
                     </p>
-                    <p>
+                    <ul>
                         {}
-                    </p>
+                    </ul>
                 </div>
             </div>",
 
             display(self.thumbnail, "", "", ".assets/default_thumbnail.png"),
             self.title,
             display(self.year, "", "", "????"),
-            display(self.subtitle, "", "", ""),
+            display(self.subtitle, "• ", "", ""),
             display(self.description, "", "", "No description provided."),
             self.episodes.into_iter().map(|(s, e, fp, size)| {
                 format!(
-                    "season  {:0>2} • episode  {:0>2} • {}  MB • <a href=\"/res/{}\" download><img src=\"/res/.assets/download.svg\" /></a>",
+                    "<li>season  {:0>2} • episode  {:0>2} • {}  MB • <a href=\"/res/{}\" download><img src=\"/res/.assets/download.svg\" /></a></li>",
                     s,
                     e,
                     size.0,

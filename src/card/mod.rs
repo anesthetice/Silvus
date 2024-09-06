@@ -14,7 +14,7 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use std::fmt::Display;
 use std::path::{Path, PathBuf};
-use tracing::{instrument, warn};
+use tracing::{info, instrument, trace, warn};
 
 static VIDEO_FILE_EXTENSIONS: [&str; 11] = [
     "webm", "mkv", "vob", "ogg", "ogv", "avi", "move", "qt", "m4v", "m4v", "mp4",
@@ -28,12 +28,8 @@ pub enum Card {
 }
 
 impl Card {
-    #[instrument]
-    pub fn from_path(path: &Path) -> eyre::Result<Self> {
-        let base = path
-            .parent()
-            .ok_or_eyre("Specified path doesn't have a parent")?;
-
+    #[instrument(skip(base))]
+    pub fn from_path(base: &Path, path: &Path) -> eyre::Result<Self> {
         let mut vid_fps: Vec<PathBuf> = Vec::new();
         let mut dot_fps: Vec<PathBuf> = Vec::new();
         let mut otr_fps: Vec<PathBuf> = Vec::new();
@@ -76,6 +72,14 @@ impl Card {
             Self::Movie(movie) => movie.into_html_string(),
             Self::Show(show) => show.into_html_string(),
             Self::Other(other) => String::from("OTHER NOT IMPLEMENTED"),
+        }
+    }
+
+    pub fn get_title(&self) -> &str {
+        match self {
+            Self::Movie(movie) => &movie.title,
+            Self::Show(show) => &show.title,
+            Self::Other(other) => "Other",
         }
     }
 }
