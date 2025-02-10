@@ -125,7 +125,7 @@ impl CardMethods for Show {
             display(self.description, "", "", "No description provided."),
             self.episodes.into_iter().map(|(s, e, fp, size)| {
                 format!(
-                    "<li>season  {:0>2} • episode  {:0>2} • {}  MB • <a href=\"/res/{}\" download><img src=\"/res/.assets/download.svg\" /></a></li>",
+                    "<li>s{:0>2}-e{:0>2} ‣ {} MB ‣ <a href=\"/res/{}\" download><img src=\"/res/.assets/download.svg\" /></a></li>",
                     s,
                     e,
                     size.0,

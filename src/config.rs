@@ -44,9 +44,9 @@ impl Default for Config {
             target_dir: None,
             port: "1888".to_string(),
             imdb_url: r#"https://www.imdb.com/"#.to_string(),
-            imdb_description_start_match: r#"class="sc-2d37a7c7-2 ggeRnl">"#.to_string(),
+            imdb_description_start_match: r#"class="sc-42125d72-2 mmImo"">"#.to_string(),
             imdb_description_end_match: r#"</span></p>"#.to_string(),
-            imdb_year_start_match: r#"releaseinfo?ref_=tt_ov_rdat">"#.to_string(),
+            imdb_year_start_match: r#"releaseinfo/?ref_=tt_ov_rdat">"#.to_string(),
             imdb_year_end_match: r#"</a>"#.to_string(),
             imdb_image_redirect_start_match: r#"class="ipc-lockup-overlay ipc-focusable" href=""#
                 .to_string(),

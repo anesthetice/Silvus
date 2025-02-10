@@ -14,7 +14,7 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use std::fmt::Display;
 use std::path::{Path, PathBuf};
-use tracing::{info, instrument, trace, warn};
+use tracing::{instrument, trace, warn};
 
 static VIDEO_FILE_EXTENSIONS: [&str; 11] = [
     "webm", "mkv", "vob", "ogg", "ogv", "avi", "move", "qt", "m4v", "m4v", "mp4",

@@ -69,7 +69,7 @@ impl CardMethods for Movie {
                         <div class=\"card-header-box-title\"><h2>{}</h2></div>
                         <div class=\"card-header-box-subtitle\">
                             <p>
-                                {} • {} MB • <a href=\"/res/{}\" download><img src=\"/res/.assets/download.svg\" /></a>
+                                {} | {} MB | <a href=\"/res/{}\" download><img src=\"/res/.assets/download.svg\" /></a>
                             </p>
                         </div>
                     </div>

@@ -5,6 +5,9 @@ use super::*;
 static DOWNLOAD_IMAGE: &[u8] = include_bytes!("../../assets/download.svg");
 static DEFAULT_THUMBNAIL_IMAGE: &[u8] = include_bytes!("../../assets/default_thumbnail.png");
 static ICON_IMAGE: &[u8] = include_bytes!("../../assets/icon.svg");
+static FONT_INTER_REGULAR: &[u8] = include_bytes!("../../assets/inter-regular.woff2");
+static FONT_BEBASNEUE_REGUALR: &[u8] = include_bytes!("../../assets/bebasneue-regular.ttf");
+static FONT_IBMPLEXMONO_REGULAR: &[u8] = include_bytes!("../../assets/ibmplexmono-regular.woff2");
 
 pub(super) fn subcommand() -> Command {
     Command::new("init").arg(
@@ -39,6 +42,13 @@ pub(super) fn process(arg_matches: &ArgMatches) -> eyre::Result<()> {
         DEFAULT_THUMBNAIL_IMAGE,
     )?;
     save_to_file(&asset_path, "icon.svg", ICON_IMAGE)?;
+    save_to_file(&asset_path, "inter-regular.woff2", FONT_INTER_REGULAR)?;
+    save_to_file(&asset_path, "bebasneue-regular.ttf", FONT_BEBASNEUE_REGUALR)?;
+    save_to_file(
+        &asset_path,
+        "ibmplexmono-regular.woff2",
+        FONT_IBMPLEXMONO_REGULAR,
+    )?;
 
     let mut owned_config = crate::config::get().clone();
     owned_config.target_dir = Some(path);

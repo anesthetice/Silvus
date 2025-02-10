@@ -1,26 +1,26 @@
 [package]
 name = "silvus"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 authors = ["anesthetice"]
 
 [dependencies]
-axum = { version = "0.7" }
-axum-macros = { version = "0.4" }
+axum = { version = "0.8" }
+axum-macros = { version = "0.5" }
 clap = { version = "4.5", features = ["cargo"] }
-directories = { version = "5.0" }
+directories = { version = "6.0" }
 eyre = { version = "0.6" }
 ijson = { version = "0.1" }
 indoc = { version = "2.0" }
-itertools = { version = "0.13" }
-once_cell = { version = "1.19" }
+itertools = { version = "0.14" }
+once_cell = { version = "1.20" }
 regex = { version = "1.10" }
 reqwest = { version = "0.12" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 time = { version = "0.3", features = ["local-offset"] }
-tokio = { version = "1.39", features = ["full"] }
-tower-http = { version = "0.5", features = ["fs", "trace"] }
+tokio = { version = "1.43", features = ["full"] }
+tower-http = { version = "0.6", features = ["fs", "trace"] }
 tracing = { version = "0.1" }
 tracing-appender = { version = "0.2" }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
